@@ -652,732 +652,232 @@ img { max-width: 100%; display: block; }
   border-radius: 3px;
 }
 
-/* ========== CINEMA ANIMATION ========== */
-.cinema-section {
+/* ========== FLOW ANIMATION (SIMPLIFIED) ========== */
+.flow-section {
   background: var(--bg-primary);
-  position: relative;
-  overflow: hidden;
-  padding: 100px 0 120px;
-}
-.cinema-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    radial-gradient(ellipse 600px 400px at 20% 50%, rgba(59,130,246,0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 400px at 80% 50%, rgba(16,185,129,0.04) 0%, transparent 70%);
-  pointer-events: none;
+  padding: 120px 0;
 }
 
-/* Theater container */
-.cinema-theater {
+/* Stage card */
+.flow-stage {
   margin-top: 56px;
-  position: relative;
-}
-
-/* Stage — the main visual area */
-.cinema-stage {
-  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 20px;
-  min-height: 420px;
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow:
-    0 4px 40px rgba(0,0,0,0.25),
-    0 0 80px rgba(16,185,129,0.03),
-    inset 0 1px 0 rgba(255,255,255,0.04);
-  transition: border-color 0.6s ease;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.2);
+  transition: border-color 0.5s ease;
 }
-.cinema-stage.danger { border-color: rgba(239,68,68,0.25); }
-.cinema-stage.safe { border-color: rgba(16,185,129,0.2); }
+.flow-stage.step-danger { border-color: rgba(239,68,68,0.2); }
+.flow-stage.step-safe { border-color: rgba(16,185,129,0.15); }
 
-/* Stage header (macOS-style) */
-.cinema-stage-header {
-  padding: 16px 24px;
+/* Stage header */
+.flow-stage-header {
+  padding: 14px 20px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255,255,255,0.015);
 }
-.cinema-dots { display: flex; gap: 7px; }
-.cinema-dots span {
-  width: 11px; height: 11px;
-  border-radius: 50%;
-  background: var(--bg-card-hover);
-  transition: background 0.3s ease;
-}
-.cinema-dots span:nth-child(1) { background: #EF4444; }
-.cinema-dots span:nth-child(2) { background: #F59E0B; }
-.cinema-dots span:nth-child(3) { background: #10B981; }
-.cinema-stage-title {
-  font-size: 0.78rem;
+.flow-dots { display: flex; gap: 6px; }
+.flow-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.flow-dots span:nth-child(1) { background: #EF4444; }
+.flow-dots span:nth-child(2) { background: #F59E0B; }
+.flow-dots span:nth-child(3) { background: #10B981; }
+.flow-stage-label {
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
-  letter-spacing: 0.03em;
-  transition: color 0.4s ease;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-/* Stage body */
-.cinema-body {
-  padding: 0;
+/* Scene container */
+.flow-scenes {
   position: relative;
-  min-height: 370px;
+  min-height: 320px;
 }
-
-/* Individual scene panels */
-.cinema-scene {
+.flow-scene {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 48px;
+  padding: 36px 40px;
   opacity: 0;
-  transform: translateY(12px) scale(0.98);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
   pointer-events: none;
 }
-.cinema-scene.active {
+.flow-scene.active {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
   pointer-events: auto;
 }
 
-/* Scene: headline + subtext */
-.scene-headline {
-  font-size: 1.1rem;
+/* Scene text */
+.flow-scene-title {
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  text-align: center;
-  letter-spacing: -0.01em;
-}
-.scene-sub {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 28px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
-/* ---- Scene 1: Upload ---- */
-.scene-upload-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-}
-.scene-file {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+/* Document block (shared between scenes) */
+.flow-doc {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-medium);
-  border-radius: 12px;
-  padding: 16px 24px;
-  min-width: 300px;
-  transition: all 0.4s ease;
-}
-.scene-file-icon {
-  width: 42px; height: 42px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.15);
-  flex-shrink: 0;
-}
-.scene-file-icon svg { stroke: var(--blue); }
-.scene-file-info { display: flex; flex-direction: column; gap: 2px; }
-.scene-file-name {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-.scene-file-meta {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-/* Action pills */
-.scene-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  max-width: 460px;
-}
-.scene-action-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 50px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  background: rgba(255,255,255,0.03);
   border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: all 0.35s ease;
-}
-.cinema-scene.active .scene-action-pill {
-  opacity: 1;
-  transform: translateY(0);
-}
-.scene-action-pill:nth-child(1) { transition-delay: 0.2s; }
-.scene-action-pill:nth-child(2) { transition-delay: 0.3s; }
-.scene-action-pill:nth-child(3) { transition-delay: 0.4s; }
-.scene-action-pill:nth-child(4) { transition-delay: 0.5s; }
-.scene-action-pill:nth-child(5) { transition-delay: 0.6s; }
-.scene-action-pill svg { width: 14px; height: 14px; stroke: var(--accent); }
-
-/* ---- Scene 2: Danger ---- */
-.scene-danger-doc {
-  position: relative;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-medium);
-  border-radius: 14px;
-  padding: 28px 32px;
+  border-radius: 10px;
+  padding: 22px 26px;
   max-width: 520px;
   width: 100%;
   font-size: 0.88rem;
   line-height: 2;
   color: var(--text-secondary);
-  transition: all 0.5s ease;
+  transition: all 0.4s ease;
 }
-.scene-danger-doc.exposed {
-  border-color: rgba(239,68,68,0.3);
-  box-shadow: 0 0 40px rgba(239,68,68,0.08), 0 0 80px rgba(239,68,68,0.04);
-}
-.scene-danger-doc .hl-danger {
-  color: #EF4444;
-  background: rgba(239,68,68,0.12);
-  padding: 2px 8px;
+.flow-doc .hl-pii {
+  color: var(--blue);
+  background: var(--blue-glow);
+  padding: 2px 6px;
   border-radius: 4px;
   font-weight: 600;
-  position: relative;
+}
+.flow-doc .hl-biz {
+  color: var(--orange);
+  background: var(--orange-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.flow-doc .hl-danger {
+  color: #EF4444;
+  background: rgba(239,68,68,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
 }
 @keyframes dangerPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
-  50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.15); }
+  50% { box-shadow: 0 0 0 3px rgba(239,68,68,0.12); }
 }
-.scene-danger-doc.exposed .hl-danger {
+.flow-doc.danger {
+  border-color: rgba(239,68,68,0.25);
+}
+.flow-doc.danger .hl-danger {
   animation: dangerPulse 1.5s ease infinite;
 }
-.scene-danger-badge {
-  position: absolute;
-  top: -14px;
-  right: 20px;
+.flow-doc .hl-token {
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+}
+.flow-doc.safe {
+  border-color: rgba(16,185,129,0.2);
+}
+
+/* Warning badge */
+.flow-warning {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin-bottom: 16px;
   padding: 6px 14px;
   border-radius: 50px;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  background: rgba(239,68,68,0.15);
-  border: 1px solid rgba(239,68,68,0.3);
+  letter-spacing: 0.05em;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
   color: #EF4444;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.4s ease 0.5s;
 }
-.scene-danger-doc.exposed .scene-danger-badge {
-  opacity: 1;
-  transform: translateY(0);
-}
-.scene-danger-arrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px;
-  opacity: 0;
-  transition: opacity 0.4s ease 0.2s;
-}
-.cinema-scene.active .scene-danger-arrow { opacity: 1; }
-.scene-danger-arrow-line {
-  width: 60px;
-  height: 2px;
-  background: linear-gradient(90deg, var(--text-muted), #EF4444);
-  border-radius: 2px;
-}
-.scene-danger-arrow svg { stroke: #EF4444; }
-.scene-ai-target {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 10px;
-  background: rgba(245,158,11,0.08);
-  border: 1px solid rgba(245,158,11,0.15);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--orange);
-}
+.flow-warning svg { width: 13px; height: 13px; stroke: #EF4444; }
 
-/* ---- Scene 3: Shield intercept ---- */
-.scene-shield-layout {
-  display: flex;
+/* Safe badge */
+.flow-safe-badge {
+  display: inline-flex;
   align-items: center;
-  gap: 32px;
-  width: 100%;
-  max-width: 560px;
-  justify-content: center;
-}
-.scene-shield-icon {
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(16,185,129,0.08);
-  border: 2px solid rgba(16,185,129,0.2);
-  position: relative;
-  flex-shrink: 0;
-}
-@keyframes shieldGlow {
-  0%, 100% { box-shadow: 0 0 20px rgba(16,185,129,0.1), 0 0 60px rgba(16,185,129,0.05); }
-  50% { box-shadow: 0 0 40px rgba(16,185,129,0.2), 0 0 80px rgba(16,185,129,0.1); }
-}
-.scene-shield-icon.glowing {
-  animation: shieldGlow 2s ease infinite;
-  border-color: rgba(16,185,129,0.4);
-  background: rgba(16,185,129,0.12);
-}
-.scene-shield-icon svg { stroke: var(--accent); width: 36px; height: 36px; }
-.scene-shield-text {
-  display: flex;
-  flex-direction: column;
   gap: 6px;
-}
-.scene-shield-name {
-  font-size: 1.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, var(--accent), var(--blue));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-}
-.scene-shield-desc {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-.scene-intercept-line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background: linear-gradient(180deg, transparent, var(--accent), transparent);
-  transform: translateX(-50%);
-  opacity: 0;
-  transition: opacity 0.6s ease 0.3s;
-}
-.cinema-scene.active .scene-intercept-line { opacity: 0.15; }
-
-/* ---- Scene 4: Anonymization waves ---- */
-.scene-waves-layout {
-  width: 100%;
-  max-width: 560px;
-}
-.scene-wave-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: 20px 24px;
-  margin-bottom: 16px;
-  opacity: 0;
-  transform: translateX(-16px);
-  transition: all 0.5s ease;
-}
-.cinema-scene.active .scene-wave-card.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-.scene-wave-card:nth-child(2) { transition-delay: 0.8s; }
-.scene-wave-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.7rem;
+  margin-top: 16px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 14px;
-}
-.scene-wave-label .wave-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-}
-.wave-dot-blue { background: var(--blue); }
-.wave-dot-orange { background: var(--orange); }
-.wave-label-blue { color: var(--blue); }
-.wave-label-orange { color: var(--orange); }
-.scene-wave-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 10px;
-  font-size: 0.82rem;
-}
-.scene-wave-row:last-child { margin-bottom: 0; }
-.wave-original {
-  color: var(--text-secondary);
-  min-width: 140px;
-  font-weight: 500;
-}
-.wave-arrow-icon {
-  color: var(--text-muted);
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.cinema-scene.active .wave-arrow-icon { opacity: 1; }
-.wave-token {
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 0.78rem;
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: all 0.35s ease;
-}
-.cinema-scene.active .wave-token.show {
-  opacity: 1;
-  transform: scale(1);
-}
-.wave-token-blue {
-  color: var(--blue);
-  background: var(--blue-glow);
-  border: 1px solid rgba(59,130,246,0.15);
-}
-.wave-token-orange {
-  color: var(--orange);
-  background: var(--orange-glow);
-  border: 1px solid rgba(245,158,11,0.15);
-}
-/* Safe badge */
-.scene-safe-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  font-weight: 700;
+  letter-spacing: 0.05em;
   background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.25);
+  border: 1px solid rgba(16,185,129,0.2);
   color: var(--accent);
   opacity: 0;
-  transform: scale(0.9);
-  transition: all 0.4s ease 1.4s;
+  transform: translateY(4px);
+  transition: all 0.4s ease 0.6s;
 }
-.cinema-scene.active .scene-safe-badge.show {
-  opacity: 1;
-  transform: scale(1);
-}
-.scene-safe-badge svg { width: 16px; height: 16px; }
+.flow-scene.active .flow-safe-badge { opacity: 1; transform: translateY(0); }
+.flow-safe-badge svg { width: 13px; height: 13px; }
 
-/* ---- Scene 5: AI processing ---- */
-.scene-ai-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-  max-width: 500px;
-}
-.scene-ai-brain {
-  width: 72px; height: 72px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.06));
-  border: 1px solid rgba(245,158,11,0.2);
+/* Dots navigation */
+.flow-nav {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
 }
-.scene-ai-brain svg { stroke: var(--orange); width: 32px; height: 32px; }
-@keyframes thinkPulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-.scene-ai-thinking {
-  display: flex; gap: 6px;
-}
-.scene-ai-thinking span {
-  width: 6px; height: 6px;
+.flow-dot {
+  width: 10px; height: 10px;
   border-radius: 50%;
-  background: var(--orange);
-  animation: thinkPulse 1s ease infinite;
-}
-.scene-ai-thinking span:nth-child(2) { animation-delay: 0.2s; }
-.scene-ai-thinking span:nth-child(3) { animation-delay: 0.4s; }
-.scene-ai-safe-input {
-  background: var(--bg-secondary);
-  border: 1px solid rgba(16,185,129,0.15);
-  border-radius: 10px;
-  padding: 16px 20px;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  line-height: 1.8;
-  width: 100%;
-  font-family: 'SF Mono', 'Fira Code', 'Inter', monospace;
-}
-.scene-ai-safe-input .tk {
-  color: var(--accent);
-  background: var(--accent-glow);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-
-/* ---- Scene 6: Rebuild ---- */
-.scene-rebuild-layout {
-  width: 100%;
-  max-width: 520px;
-}
-.scene-rebuild-card {
-  background: var(--bg-secondary);
-  border-radius: 14px;
-  padding: 28px 28px;
-  border: 1px solid rgba(16,185,129,0.15);
-  font-size: 0.88rem;
-  line-height: 2;
-  color: var(--text-secondary);
-  position: relative;
-  overflow: hidden;
-}
-.scene-rebuild-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--blue));
-  opacity: 0;
-  transition: opacity 0.5s ease 0.6s;
-}
-.cinema-scene.active .scene-rebuild-card::before { opacity: 1; }
-.scene-rebuild-card .hl-restored {
-  display: inline;
-  position: relative;
-}
-.scene-rebuild-card .hl-restored .token-overlay {
-  position: absolute;
-  inset: -1px -4px;
-  background: var(--accent-glow);
-  border-radius: 4px;
-  opacity: 1;
-  transition: opacity 0.4s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.76rem;
-  font-weight: 700;
-  color: var(--accent);
-  font-family: 'SF Mono', 'Fira Code', monospace;
-  padding: 0 6px;
-  white-space: nowrap;
-}
-.scene-rebuild-card .hl-restored .token-overlay.fade {
-  opacity: 0;
-  pointer-events: none;
-}
-.scene-rebuild-card .hl-blue {
-  color: var(--blue);
-  font-weight: 600;
-}
-.scene-rebuild-card .hl-orange {
-  color: var(--orange);
-  font-weight: 600;
-}
-.scene-rebuild-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-  padding: 10px 20px;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  background: rgba(16,185,129,0.1);
-  border: 1px solid rgba(16,185,129,0.25);
-  color: var(--accent);
-  opacity: 0;
-  transform: translateY(6px);
-  transition: all 0.4s ease 1.2s;
-}
-.cinema-scene.active .scene-rebuild-badge.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---- Scene 7: CTA ---- */
-.scene-final-layout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-.scene-final-shield {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(59,130,246,0.08));
-  border: 2px solid rgba(16,185,129,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: shieldGlow 2.5s ease infinite;
-}
-.scene-final-shield svg { stroke: var(--accent); width: 36px; height: 36px; }
-.scene-final-text {
-  font-size: 1.5rem;
-  font-weight: 800;
-  text-align: center;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--text-primary), var(--accent));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* ========== CINEMA TIMELINE ========== */
-.cinema-timeline {
-  display: flex;
-  align-items: center;
-  margin-top: 32px;
-  gap: 0;
-  position: relative;
-}
-.cinema-timeline-track {
-  flex: 1;
-  height: 3px;
   background: var(--bg-card-hover);
-  border-radius: 3px;
-  position: relative;
-  overflow: hidden;
-}
-.cinema-timeline-fill {
-  position: absolute;
-  top: 0; left: 0; bottom: 0;
-  width: 0%;
-  background: linear-gradient(90deg, var(--blue), var(--accent));
-  border-radius: 3px;
-  transition: width 0.6s ease;
-}
-.cinema-step-dots {
-  display: flex;
-  justify-content: space-between;
-  position: absolute;
-  inset: 0;
-  align-items: center;
-  pointer-events: none;
-}
-.cinema-step-dot {
-  width: 13px; height: 13px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 2px solid var(--bg-card-hover);
-  transition: all 0.3s ease;
-  pointer-events: auto;
+  border: none;
   cursor: pointer;
-  z-index: 2;
+  padding: 0;
+  transition: all 0.3s ease;
 }
-.cinema-step-dot.reached {
-  border-color: var(--accent);
+.flow-dot.active {
   background: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
+  transform: scale(1.3);
 }
-.cinema-step-dot.current {
-  border-color: var(--accent);
-  background: var(--accent);
-  box-shadow: 0 0 12px rgba(16,185,129,0.4);
-  transform: scale(1.25);
-}
-.cinema-step-dot.danger-dot.reached,
-.cinema-step-dot.danger-dot.current {
-  border-color: #EF4444;
+.flow-dot.danger-dot.active {
   background: #EF4444;
-  box-shadow: 0 0 12px rgba(239,68,68,0.3);
+  box-shadow: 0 0 8px rgba(239,68,68,0.3);
 }
 
-/* Step labels below timeline */
-.cinema-labels {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-}
-.cinema-label {
-  font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  padding: 4px 2px;
-  text-align: center;
-  transition: color 0.3s ease;
-  width: 14.28%;
-}
-.cinema-label:hover { color: var(--text-secondary); }
-.cinema-label.active { color: var(--accent); }
-.cinema-label.danger-label.active { color: #EF4444; }
-
-/* Pause/play */
-.cinema-controls {
+/* Step labels */
+.flow-labels {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
-  gap: 12px;
+  gap: 32px;
+  margin-top: 14px;
 }
-.cinema-playpause {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 18px;
-  border-radius: 50px;
-  font-family: inherit;
-  font-size: 0.72rem;
+.flow-label {
+  font-size: 0.7rem;
   font-weight: 600;
   color: var(--text-muted);
-  background: rgba(255,255,255,0.03);
-  border: 1px solid var(--border-subtle);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-family: inherit;
 }
-.cinema-playpause:hover {
-  color: var(--text-secondary);
-  border-color: var(--border-medium);
-}
-.cinema-playpause svg { width: 14px; height: 14px; }
+.flow-label:hover { color: var(--text-secondary); }
+.flow-label.active { color: var(--accent); }
 
-/* ========== CINEMA RESPONSIVE ========== */
 @media (max-width: 768px) {
-  .cinema-section { padding: 80px 0; }
-  .cinema-stage { min-height: 350px; border-radius: 14px; }
-  .cinema-scene { padding: 28px 20px; }
-  .scene-file { min-width: auto; padding: 12px 16px; }
-  .scene-actions { gap: 6px; }
-  .scene-action-pill { padding: 6px 10px; font-size: 0.7rem; }
-  .scene-danger-doc { padding: 20px; font-size: 0.82rem; }
-  .scene-shield-layout { flex-direction: column; gap: 20px; text-align: center; }
-  .scene-shield-icon { width: 72px; height: 72px; }
-  .scene-wave-row { flex-wrap: wrap; gap: 6px; }
-  .wave-original { min-width: auto; }
-  .cinema-label { font-size: 0.55rem; letter-spacing: 0.02em; }
-  .scene-final-text { font-size: 1.2rem; }
+  .flow-section { padding: 80px 0; }
+  .flow-scenes { min-height: 280px; }
+  .flow-scene { padding: 24px 20px; }
+  .flow-doc { padding: 16px 18px; font-size: 0.82rem; }
+  .flow-labels { gap: 16px; }
+  .flow-label { font-size: 0.6rem; }
 }
 
 /* ========== BENEFITS ========== */
@@ -1837,207 +1337,81 @@ img { max-width: 100%; display: block; }
   </div>
 </section>
 
-<!-- ========== CINEMA ANIMATION ========== -->
-<section class="cinema-section" id="flow">
+<!-- ========== FLOW ANIMATION ========== -->
+<section class="section flow-section" id="flow">
   <div class="container">
     <div class="text-center fade-in-up">
       <p class="section-label">See It In Action</p>
       <h2 class="section-heading">What Happens When You Use OpenLLM</h2>
-      <p class="section-sub mx-auto">Your data is protected at every step. Watch the full journey.</p>
+      <p class="section-sub mx-auto">Watch how your data stays protected at every step.</p>
     </div>
 
-    <div class="cinema-theater fade-in-up delay-1" id="cinemaTheater">
-      <div class="cinema-stage" id="cinemaStage">
-        <div class="cinema-stage-header">
-          <div class="cinema-dots"><span></span><span></span><span></span></div>
-          <span class="cinema-stage-title" id="cinemaTitle">Step 1 of 7</span>
-        </div>
-        <div class="cinema-body">
-
-          <!-- SCENE 1: Upload -->
-          <div class="cinema-scene active" id="scene0">
-            <div class="scene-headline">Use AI on your documents</div>
-            <div class="scene-sub">Upload any file and choose what you need</div>
-            <div class="scene-upload-area">
-              <div class="scene-file">
-                <div class="scene-file-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="scene-file-info">
-                  <span class="scene-file-name">Partnership_Agreement.pdf</span>
-                  <span class="scene-file-meta">2.4 MB &middot; 12 pages &middot; Confidential</span>
-                </div>
-              </div>
-              <div class="scene-actions">
-                <div class="scene-action-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h8"/></svg> Summarize</div>
-                <div class="scene-action-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Extract Insights</div>
-                <div class="scene-action-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Find Entities</div>
-                <div class="scene-action-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0014.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg> Translate</div>
-                <div class="scene-action-pill"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg> Compare</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SCENE 2: Danger -->
-          <div class="cinema-scene" id="scene1">
-            <div class="scene-headline" style="color:#EF4444;">Your data is exposed</div>
-            <div class="scene-sub">Without protection, AI sees everything</div>
-            <div class="scene-danger-arrow">
-              <div class="scene-ai-target">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                AI Model
-              </div>
-              <div class="scene-danger-arrow-line"></div>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </div>
-            <div class="scene-danger-doc" id="dangerDoc">
-              <div class="scene-danger-badge">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                Data Exposed
-              </div>
-              Partnership agreement between <span class="hl-danger">Sarah Johnson</span> (CEO of <span class="hl-danger">Nexus Technologies</span>) and <span class="hl-danger">Michael Chen</span> regarding <span class="hl-danger">Project Aurora</span>. Contact: <span class="hl-danger">s.johnson@nexustech.io</span>, <span class="hl-danger">415-555-0192</span>
-            </div>
-          </div>
-
-          <!-- SCENE 3: Shield intercept -->
-          <div class="cinema-scene" id="scene2">
-            <div class="scene-headline">Secure processing layer</div>
-            <div class="scene-sub">OpenLLM intercepts and protects your data</div>
-            <div class="scene-intercept-line"></div>
-            <div class="scene-shield-layout">
-              <div class="scene-shield-icon" id="shieldIcon">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="scene-shield-text">
-                <div class="scene-shield-name">SecureLLM Engine</div>
-                <div class="scene-shield-desc">2-wave anonymization powered by NLP + custom dictionaries.<br>Your data never reaches AI unprotected.</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SCENE 4: Anonymization waves -->
-          <div class="cinema-scene" id="scene3">
-            <div class="scene-headline">Real-time anonymization</div>
-            <div class="scene-sub">Two waves of intelligent data masking</div>
-            <div class="scene-waves-layout">
-              <div class="scene-wave-card" id="waveCard1">
-                <div class="scene-wave-label"><span class="wave-dot wave-dot-blue"></span> <span class="wave-label-blue">Wave 1 — Personal Data (NLP)</span></div>
-                <div class="scene-wave-row">
-                  <span class="wave-original">Sarah Johnson</span>
-                  <span class="wave-arrow-icon">&rarr;</span>
-                  <span class="wave-token wave-token-blue" id="wt1">&lt;PERSON_1&gt;</span>
-                </div>
-                <div class="scene-wave-row">
-                  <span class="wave-original">s.johnson@nexustech.io</span>
-                  <span class="wave-arrow-icon">&rarr;</span>
-                  <span class="wave-token wave-token-blue" id="wt2">&lt;EMAIL_1&gt;</span>
-                </div>
-                <div class="scene-wave-row">
-                  <span class="wave-original">415-555-0192</span>
-                  <span class="wave-arrow-icon">&rarr;</span>
-                  <span class="wave-token wave-token-blue" id="wt3">&lt;PHONE_1&gt;</span>
-                </div>
-              </div>
-              <div class="scene-wave-card" id="waveCard2">
-                <div class="scene-wave-label"><span class="wave-dot wave-dot-orange"></span> <span class="wave-label-orange">Wave 2 — Business Context (Custom)</span></div>
-                <div class="scene-wave-row">
-                  <span class="wave-original">Nexus Technologies</span>
-                  <span class="wave-arrow-icon">&rarr;</span>
-                  <span class="wave-token wave-token-orange" id="wt4">[COMPANY_1]</span>
-                </div>
-                <div class="scene-wave-row">
-                  <span class="wave-original">Project Aurora</span>
-                  <span class="wave-arrow-icon">&rarr;</span>
-                  <span class="wave-token wave-token-orange" id="wt5">[PROJECT_1]</span>
-                </div>
-              </div>
-              <div style="text-align:center;">
-                <div class="scene-safe-badge" id="safeBadge">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  Document is now AI-safe
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SCENE 5: AI processing -->
-          <div class="cinema-scene" id="scene4">
-            <div class="scene-headline">AI works on safe data</div>
-            <div class="scene-sub">Full intelligence, zero exposure</div>
-            <div class="scene-ai-layout">
-              <div class="scene-ai-brain">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-              </div>
-              <div class="scene-ai-thinking"><span></span><span></span><span></span></div>
-              <div class="scene-ai-safe-input">
-                Partnership agreement between <span class="tk">&lt;PERSON_1&gt;</span> (CEO of <span class="tk">[COMPANY_1]</span>) and <span class="tk">&lt;PERSON_2&gt;</span> regarding <span class="tk">[PROJECT_1]</span>. Contact: <span class="tk">&lt;EMAIL_1&gt;</span>, <span class="tk">&lt;PHONE_1&gt;</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- SCENE 6: Rebuild -->
-          <div class="cinema-scene" id="scene5">
-            <div class="scene-headline">Your data, fully restored</div>
-            <div class="scene-sub">Placeholders replaced with original values</div>
-            <div class="scene-rebuild-layout">
-              <div class="scene-rebuild-card" id="rebuildCard">
-                The partnership agreement between <span class="hl-restored"><span class="hl-blue">Sarah Johnson</span><span class="token-overlay" id="ro1">&lt;PERSON_1&gt;</span></span> (CEO of <span class="hl-restored"><span class="hl-orange">Nexus Technologies</span><span class="token-overlay" id="ro2">[COMPANY_1]</span></span>) and <span class="hl-restored"><span class="hl-blue">Michael Chen</span><span class="token-overlay" id="ro3">&lt;PERSON_2&gt;</span></span> for <span class="hl-restored"><span class="hl-orange">Project Aurora</span><span class="token-overlay" id="ro4">[PROJECT_1]</span></span> outlines a 24-month strategic partnership covering data integration, joint development, and revenue sharing at 60/40 split.
-              </div>
-              <div style="text-align:center;">
-                <div class="scene-rebuild-badge show" id="rebuildBadge">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                  Your data never left unprotected
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- SCENE 7: CTA -->
-          <div class="cinema-scene" id="scene6">
-            <div class="scene-final-layout">
-              <div class="scene-final-shield">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div class="scene-final-text">Use AI without exposing your data</div>
-              <div class="scene-sub" style="margin-bottom:0;">The safest way to leverage AI for sensitive documents</div>
-              <a href="#pricing" class="btn btn-primary" style="margin-top:8px;">Try it now</a>
-            </div>
-          </div>
-
-        </div>
+    <div class="flow-stage fade-in-up delay-1" id="flowStage">
+      <div class="flow-stage-header">
+        <div class="flow-dots"><span></span><span></span><span></span></div>
+        <span class="flow-stage-label" id="flowLabel">Your data</span>
       </div>
+      <div class="flow-scenes">
 
-      <!-- Timeline -->
-      <div class="cinema-timeline">
-        <div class="cinema-timeline-track">
-          <div class="cinema-timeline-fill" id="cinemaFill"></div>
-          <div class="cinema-step-dots">
-            <div class="cinema-step-dot current" data-cs="0"></div>
-            <div class="cinema-step-dot danger-dot" data-cs="1"></div>
-            <div class="cinema-step-dot" data-cs="2"></div>
-            <div class="cinema-step-dot" data-cs="3"></div>
-            <div class="cinema-step-dot" data-cs="4"></div>
-            <div class="cinema-step-dot" data-cs="5"></div>
-            <div class="cinema-step-dot" data-cs="6"></div>
+        <!-- Scene 1: Your data with sensitive info highlighted -->
+        <div class="flow-scene active" id="fs0">
+          <div class="flow-scene-title">You send a document to AI</div>
+          <div class="flow-doc">
+            Summarize the partnership between <span class="hl-pii">Sarah Johnson</span> and <span class="hl-biz">Nexus Technologies</span> regarding <span class="hl-biz">Project Aurora</span>. Contact: <span class="hl-pii">s.johnson@nexustech.io</span>, <span class="hl-pii">415-555-0192</span>
           </div>
         </div>
+
+        <!-- Scene 2: Danger — unprotected -->
+        <div class="flow-scene" id="fs1">
+          <div class="flow-scene-title" style="color:#EF4444;">Without OpenLLM, AI sees everything</div>
+          <div class="flow-warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Data exposed to third-party AI
+          </div>
+          <div class="flow-doc danger" id="flowDangerDoc">
+            Summarize the partnership between <span class="hl-danger">Sarah Johnson</span> and <span class="hl-danger">Nexus Technologies</span> regarding <span class="hl-danger">Project Aurora</span>. Contact: <span class="hl-danger">s.johnson@nexustech.io</span>, <span class="hl-danger">415-555-0192</span>
+          </div>
+        </div>
+
+        <!-- Scene 3: OpenLLM anonymizes -->
+        <div class="flow-scene" id="fs2">
+          <div class="flow-scene-title" style="color:var(--accent);">OpenLLM anonymizes before AI sees it</div>
+          <div class="flow-doc safe">
+            Summarize the partnership between <span class="hl-token">&lt;PERSON_1&gt;</span> and <span class="hl-token">[COMPANY_1]</span> regarding <span class="hl-token">[PROJECT_1]</span>. Contact: <span class="hl-token">&lt;EMAIL_1&gt;</span>, <span class="hl-token">&lt;PHONE_1&gt;</span>
+          </div>
+          <div class="flow-safe-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            AI-safe &mdash; no real data exposed
+          </div>
+        </div>
+
+        <!-- Scene 4: Result restored -->
+        <div class="flow-scene" id="fs3">
+          <div class="flow-scene-title" style="color:var(--accent);">You get the full result with real data restored</div>
+          <div class="flow-doc safe">
+            The partnership between <span class="hl-pii">Sarah Johnson</span> and <span class="hl-biz">Nexus Technologies</span> for <span class="hl-biz">Project Aurora</span> outlines a 24-month strategic partnership covering data integration, joint development, and revenue sharing at 60/40 split.
+          </div>
+          <div class="flow-safe-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Your data never left unprotected
+          </div>
+        </div>
+
       </div>
-      <div class="cinema-labels">
-        <span class="cinema-label active" data-cs="0">Upload</span>
-        <span class="cinema-label danger-label" data-cs="1">Risk</span>
-        <span class="cinema-label" data-cs="2">Intercept</span>
-        <span class="cinema-label" data-cs="3">Anonymize</span>
-        <span class="cinema-label" data-cs="4">AI Process</span>
-        <span class="cinema-label" data-cs="5">Restore</span>
-        <span class="cinema-label" data-cs="6">Result</span>
-      </div>
-      <div class="cinema-controls">
-        <button class="cinema-playpause" id="cinemaPlayPause">
-          <svg id="cinemaPauseIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-          <svg id="cinemaPlayIcon" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="display:none;"><polygon points="5,3 19,12 5,21"/></svg>
-          <span id="cinemaPlayLabel">Pause</span>
-        </button>
-      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flow-nav" id="flowNav">
+      <button class="flow-dot active" data-fs="0"></button>
+      <button class="flow-dot danger-dot" data-fs="1"></button>
+      <button class="flow-dot" data-fs="2"></button>
+      <button class="flow-dot" data-fs="3"></button>
+    </div>
+    <div class="flow-labels">
+      <button class="flow-label active" data-fs="0">Your Data</button>
+      <button class="flow-label" data-fs="1">The Risk</button>
+      <button class="flow-label" data-fs="2">Protected</button>
+      <button class="flow-label" data-fs="3">Result</button>
     </div>
   </div>
 </section>
@@ -2457,170 +1831,75 @@ indicators.forEach(ind => {
   });
 });
 
-// ========== CINEMA ANIMATION ==========
-const CINEMA_TOTAL = 7;
-const CINEMA_DURATIONS = [4000, 4500, 3500, 5000, 4000, 5000, 5000]; // ms per scene
-const CINEMA_TITLES = [
-  'Step 1 of 7 — Upload',
-  'Step 2 of 7 — Risk Detected',
-  'Step 3 of 7 — Intercepted',
-  'Step 4 of 7 — Anonymizing',
-  'Step 5 of 7 — AI Processing',
-  'Step 6 of 7 — Restoring',
-  'Step 7 of 7 — Complete'
-];
+// ========== FLOW ANIMATION ==========
+const FLOW_LABELS = ['Your data', 'Risk detected', 'Protected', 'Result'];
+const FLOW_DURATIONS = [4000, 4000, 4000, 5000];
+let flowStep = 0;
+let flowTimer = null;
 
-let cinemaStep = 0;
-let cinemaTimer = null;
-let cinemaPlaying = true;
+const flowStage = document.getElementById('flowStage');
+const flowLabelEl = document.getElementById('flowLabel');
+const fScenes = [0,1,2,3].map(i => document.getElementById('fs' + i));
+const fDots = document.querySelectorAll('.flow-dot');
+const fLabels = document.querySelectorAll('.flow-label');
 
-const cinemaStage = document.getElementById('cinemaStage');
-const cinemaTitle = document.getElementById('cinemaTitle');
-const cinemaFill = document.getElementById('cinemaFill');
-const scenes = Array.from({ length: CINEMA_TOTAL }, (_, i) => document.getElementById('scene' + i));
-const cDots = document.querySelectorAll('.cinema-step-dot');
-const cLabels = document.querySelectorAll('.cinema-label');
-const playPauseBtn = document.getElementById('cinemaPlayPause');
-const pauseIcon = document.getElementById('cinemaPauseIcon');
-const playIcon = document.getElementById('cinemaPlayIcon');
-const playLabel = document.getElementById('cinemaPlayLabel');
+function goToFlow(step) {
+  flowStep = step;
+  fScenes.forEach((s, i) => s.classList.toggle('active', i === step));
+  flowLabelEl.textContent = FLOW_LABELS[step];
 
-function goToCinemaStep(step) {
-  cinemaStep = step;
-
-  // Switch scenes
-  scenes.forEach((s, i) => s.classList.toggle('active', i === step));
-
-  // Update title
-  cinemaTitle.textContent = CINEMA_TITLES[step];
-
-  // Stage border state
-  cinemaStage.classList.remove('danger', 'safe');
-  if (step === 1) cinemaStage.classList.add('danger');
-  if (step >= 2) cinemaStage.classList.add('safe');
-
-  // Timeline fill
-  cinemaFill.style.width = (step / (CINEMA_TOTAL - 1) * 100) + '%';
+  // Stage border
+  flowStage.classList.remove('step-danger', 'step-safe');
+  if (step === 1) flowStage.classList.add('step-danger');
+  if (step >= 2) flowStage.classList.add('step-safe');
 
   // Dots
-  cDots.forEach((d, i) => {
-    d.classList.remove('reached', 'current');
-    if (i < step) d.classList.add('reached');
-    if (i === step) d.classList.add('current');
-  });
+  fDots.forEach((d, i) => d.classList.toggle('active', i === step));
 
   // Labels
-  cLabels.forEach((l, i) => l.classList.toggle('active', i === step));
+  fLabels.forEach((l, i) => l.classList.toggle('active', i === step));
 
-  // Scene-specific triggers
-  triggerSceneEffects(step);
-}
-
-function triggerSceneEffects(step) {
-  // Scene 2: danger doc exposed effect
-  const dangerDoc = document.getElementById('dangerDoc');
-  if (dangerDoc) {
-    if (step === 1) {
-      setTimeout(() => dangerDoc.classList.add('exposed'), 400);
-    } else {
-      dangerDoc.classList.remove('exposed');
-    }
-  }
-
-  // Scene 3: shield glow
-  const shieldIcon = document.getElementById('shieldIcon');
-  if (shieldIcon) {
-    if (step === 2) {
-      setTimeout(() => shieldIcon.classList.add('glowing'), 300);
-    } else {
-      shieldIcon.classList.remove('glowing');
-    }
-  }
-
-  // Scene 4: wave cards + tokens animate in
-  const wc1 = document.getElementById('waveCard1');
-  const wc2 = document.getElementById('waveCard2');
-  const tokens = ['wt1','wt2','wt3','wt4','wt5'].map(id => document.getElementById(id));
-  const safeBadge = document.getElementById('safeBadge');
-  if (step === 3) {
-    setTimeout(() => { if (wc1) wc1.classList.add('show'); }, 200);
-    setTimeout(() => { if (wc2) wc2.classList.add('show'); }, 900);
-    tokens.forEach((t, i) => {
-      setTimeout(() => { if (t) t.classList.add('show'); }, 500 + i * 250);
-    });
-    setTimeout(() => { if (safeBadge) safeBadge.classList.add('show'); }, 2200);
-  } else {
-    if (wc1) wc1.classList.remove('show');
-    if (wc2) wc2.classList.remove('show');
-    tokens.forEach(t => { if (t) t.classList.remove('show'); });
-    if (safeBadge) safeBadge.classList.remove('show');
-  }
-
-  // Scene 6: rebuild - fade out token overlays
-  const overlays = ['ro1','ro2','ro3','ro4'].map(id => document.getElementById(id));
-  if (step === 5) {
-    overlays.forEach((o, i) => {
-      if (o) {
-        o.classList.remove('fade');
-        setTimeout(() => o.classList.add('fade'), 600 + i * 350);
-      }
-    });
-  } else {
-    overlays.forEach(o => { if (o) o.classList.remove('fade'); });
+  // Scene 2: trigger danger pulse
+  const dd = document.getElementById('flowDangerDoc');
+  if (dd) {
+    if (step === 1) setTimeout(() => dd.classList.add('danger'), 300);
+    else dd.classList.remove('danger');
   }
 }
 
-function startCinema() {
-  clearTimeout(cinemaTimer);
-  cinemaTimer = setTimeout(() => {
-    if (!cinemaPlaying) return;
-    const next = (cinemaStep + 1) % CINEMA_TOTAL;
-    goToCinemaStep(next);
-    startCinema();
-  }, CINEMA_DURATIONS[cinemaStep]);
+function startFlow() {
+  clearTimeout(flowTimer);
+  flowTimer = setTimeout(() => {
+    goToFlow((flowStep + 1) % 4);
+    startFlow();
+  }, FLOW_DURATIONS[flowStep]);
 }
 
-function toggleCinema() {
-  cinemaPlaying = !cinemaPlaying;
-  pauseIcon.style.display = cinemaPlaying ? 'block' : 'none';
-  playIcon.style.display = cinemaPlaying ? 'none' : 'block';
-  playLabel.textContent = cinemaPlaying ? 'Pause' : 'Play';
-  if (cinemaPlaying) startCinema();
-  else clearTimeout(cinemaTimer);
-}
-
-// Initialize on scroll into view
-const cinemaObs = new IntersectionObserver((entries) => {
+// Start when scrolled into view
+const flowObs = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      goToCinemaStep(0);
-      startCinema();
-      cinemaObs.unobserve(entry.target);
+      goToFlow(0);
+      startFlow();
+      flowObs.unobserve(entry.target);
     }
   });
-}, { threshold: 0.15 });
+}, { threshold: 0.2 });
 
-const cinemaEl = document.getElementById('cinemaTheater');
-if (cinemaEl) cinemaObs.observe(cinemaEl);
+const flowEl = document.getElementById('flowStage');
+if (flowEl) flowObs.observe(flowEl);
 
-// Click on dots / labels
-cDots.forEach(dot => {
-  dot.addEventListener('click', () => {
-    clearTimeout(cinemaTimer);
-    goToCinemaStep(parseInt(dot.dataset.cs));
-    if (cinemaPlaying) startCinema();
-  });
-});
-cLabels.forEach(label => {
-  label.addEventListener('click', () => {
-    clearTimeout(cinemaTimer);
-    goToCinemaStep(parseInt(label.dataset.cs));
-    if (cinemaPlaying) startCinema();
-  });
-});
-
-// Play/pause
-if (playPauseBtn) playPauseBtn.addEventListener('click', toggleCinema);
+// Click navigation
+fDots.forEach(d => d.addEventListener('click', () => {
+  clearTimeout(flowTimer);
+  goToFlow(parseInt(d.dataset.fs));
+  startFlow();
+}));
+fLabels.forEach(l => l.addEventListener('click', () => {
+  clearTimeout(flowTimer);
+  goToFlow(parseInt(l.dataset.fs));
+  startFlow();
+}));
 
 // ========== SMOOTH SCROLL FOR ANCHOR LINKS ==========
 document.querySelectorAll('a[href^="#"]').forEach(a => {
