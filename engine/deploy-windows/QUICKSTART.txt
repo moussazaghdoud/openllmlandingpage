@@ -1,0 +1,42 @@
+=============================================
+  SecureLLM Privacy Gateway - Quick Start
+  Windows Edition
+=============================================
+
+PREREQUISITES:
+  - Docker Desktop for Windows (running)
+  - PowerShell 5.1+ (built into Windows)
+
+STEP 1: Open PowerShell as Administrator
+
+STEP 2: Run the installer:
+
+    .\install.ps1
+
+    Or with parameters:
+    .\install.ps1 -Port 8443
+
+STEP 3: Save the Admin API key displayed at the end.
+
+STEP 4: Test:
+
+    Invoke-WebRequest https://localhost/health -SkipCertificateCheck
+
+STEP 5: Test anonymization:
+
+    $headers = @{ "Authorization" = "Bearer YOUR_ADMIN_API_KEY" }
+    Invoke-RestMethod https://localhost/v1/anonymize `
+        -Method Post `
+        -Headers $headers `
+        -ContentType "application/json" `
+        -Body '{"text": "John Smith from Acme Corp"}' `
+        -SkipCertificateCheck
+
+MANAGEMENT:
+    .\securellm.ps1 status     - Check service status
+    .\securellm.ps1 logs       - View logs
+    .\securellm.ps1 stop       - Stop services
+    .\securellm.ps1 restart    - Restart services
+
+Done. Full documentation is in README.md.
+=============================================

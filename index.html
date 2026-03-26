@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenLLM — Use AI Without Exposing Your Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ========== CSS CUSTOM PROPERTIES ========== */
+:root {
+  --bg-primary: #0B0F1A;
+  --bg-secondary: #111827;
+  --bg-card: #1A1F2E;
+  --bg-card-hover: #222840;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-medium: rgba(255,255,255,0.1);
+  --text-primary: #F9FAFB;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --blue: #3B82F6;
+  --blue-glow: rgba(59,130,246,0.15);
+  --orange: #F59E0B;
+  --orange-glow: rgba(245,158,11,0.15);
+  --accent: #10B981;
+  --accent-hover: #34D399;
+  --accent-glow: rgba(16,185,129,0.2);
+  --danger: #EF4444;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 60px rgba(16,185,129,0.08);
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  --max-width: 1200px;
+}
+
+/* ========== RESET & BASE ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ========== UTILITY ========== */
+.container { max-width: var(--max-width); margin: 0 auto; padding: 0 24px; }
+.section { padding: 120px 0; }
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.section-heading {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+.section-sub {
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  line-height: 1.7;
+}
+.text-center { text-align: center; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* ========== ANIMATIONS ========== */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s var(--transition), transform 0.7s var(--transition);
+}
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-in-up.delay-1 { transition-delay: 0.1s; }
+.fade-in-up.delay-2 { transition-delay: 0.2s; }
+.fade-in-up.delay-3 { transition-delay: 0.3s; }
+.fade-in-up.delay-4 { transition-delay: 0.4s; }
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+  50% { box-shadow: 0 0 40px var(--accent-glow), 0 0 80px rgba(16,185,129,0.08); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ========== BUTTONS ========== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #059669);
+  color: #fff;
+  box-shadow: 0 4px 20px var(--accent-glow);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(16,185,129,0.35);
+  background: linear-gradient(135deg, var(--accent-hover), var(--accent));
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
+}
+.btn-secondary:hover {
+  color: var(--text-primary);
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.03);
+}
+.btn-large {
+  padding: 18px 44px;
+  font-size: 1.1rem;
+}
+.btn-nav {
+  padding: 10px 24px;
+  font-size: 0.9rem;
+}
+
+/* ========== NAVBAR ========== */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0 24px;
+  transition: all var(--transition);
+  background: transparent;
+}
+.navbar.scrolled {
+  background: rgba(11,15,26,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.navbar-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.navbar-logo {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.navbar-logo .logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+}
+.navbar-links a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+}
+.navbar-links a:hover { color: var(--text-primary); }
+.navbar-cta { display: flex; align-items: center; gap: 12px; }
+.mobile-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+}
+.mobile-toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: all var(--transition);
+}
+
+/* ========== HERO ========== */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 72px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(16,185,129,0.06) 0%, rgba(59,130,246,0.03) 40%, transparent 70%);
+  pointer-events: none;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 28px;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse-glow 2s infinite;
+}
+.hero-heading {
+  font-size: clamp(2.75rem, 5.5vw, 4.25rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+  margin-bottom: 24px;
+}
+.hero-heading .highlight {
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 520px;
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.hero-link {
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: color var(--transition);
+  font-size: 0.95rem;
+}
+.hero-link:hover { color: var(--accent); }
+
+/* ========== HERO DEMO CARD ========== */
+.demo-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  position: relative;
+}
+.demo-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.demo-dots {
+  display: flex;
+  gap: 6px;
+}
+.demo-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-card-hover);
+}
+.demo-dots span:nth-child(1) { background: #EF4444; }
+.demo-dots span:nth-child(2) { background: #F59E0B; }
+.demo-dots span:nth-child(3) { background: #10B981; }
+.demo-title {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.demo-body {
+  padding: 28px 24px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.demo-steps {
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px 0;
+  margin-bottom: 0;
+}
+.demo-step-indicator {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--bg-card-hover);
+  transition: background 0.5s ease;
+  cursor: pointer;
+}
+.demo-step-indicator.active {
+  background: var(--accent);
+}
+.demo-step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.demo-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  font-family: 'Inter', monospace;
+  color: var(--text-secondary);
+  transition: opacity 0.4s ease;
+}
+.demo-text .hl-blue {
+  color: var(--blue);
+  background: var(--blue-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.demo-text .hl-orange {
+  color: var(--orange);
+  background: var(--orange-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.demo-text .hl-token {
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.demo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.4s ease;
+}
+.demo-badge.show {
+  opacity: 1;
+  transform: scale(1);
+}
+.demo-badge.safe {
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.3);
+  color: var(--accent);
+}
+
+/* ========== PROBLEM SECTION ========== */
+.problem { background: var(--bg-secondary); }
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+  margin-bottom: 80px;
+}
+.problem-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  transition: all var(--transition);
+}
+.problem-card:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+.problem-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.15);
+}
+.problem-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.problem-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.transition-text {
+  text-align: center;
+}
+.transition-text p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.transition-text h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ========== SEE WHAT AI SEES ========== */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 60px;
+}
+.comparison-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.comparison-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.comparison-header .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.comparison-header .dot-red { background: var(--danger); }
+.comparison-header .dot-green { background: var(--accent); }
+.comparison-body {
+  padding: 28px 24px;
+  font-size: 0.92rem;
+  line-height: 2;
+  color: var(--text-secondary);
+}
+.comparison-card.yours { border-color: rgba(239,68,68,0.15); }
+.comparison-card.ai { border-color: rgba(16,185,129,0.15); }
+.comparison-body .hl-blue {
+  color: var(--blue);
+  background: var(--blue-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.comparison-body .hl-orange {
+  color: var(--orange);
+  background: var(--orange-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.comparison-body .hl-token-blue {
+  color: var(--blue);
+  background: var(--blue-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-style: italic;
+}
+.comparison-body .hl-token-orange {
+  color: var(--orange);
+  background: var(--orange-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-style: italic;
+}
+.arrow-between {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+}
+
+/* ========== HOW IT WORKS ========== */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  margin-top: 60px;
+  position: relative;
+}
+.steps-grid::before {
+  content: '';
+  position: absolute;
+  top: 44px;
+  left: calc(16.66% + 20px);
+  right: calc(16.66% + 20px);
+  height: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--accent));
+  opacity: 0.3;
+}
+.step-card { text-align: center; position: relative; }
+.step-number {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 2px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  position: relative;
+  z-index: 1;
+  transition: all var(--transition);
+}
+.step-card:hover .step-number {
+  border-color: var(--accent);
+  box-shadow: 0 0 30px var(--accent-glow);
+}
+.step-number svg {
+  width: 32px;
+  height: 32px;
+  stroke: var(--accent);
+}
+.step-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.step-card p {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 280px;
+  margin: 0 auto;
+}
+.wave-details {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.wave-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+.wave-item strong {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+.wave-item .wave-blue { color: var(--blue); }
+.wave-item .wave-orange { color: var(--orange); }
+.wave-item code {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.03);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+/* ========== BENEFITS ========== */
+.benefits { background: var(--bg-secondary); }
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+.benefit-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 36px 28px;
+  transition: all var(--transition);
+}
+.benefit-card:hover {
+  border-color: var(--border-medium);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+.benefit-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.12);
+}
+.benefit-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--accent);
+}
+.benefit-card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.benefit-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ========== SECURITY ========== */
+.security-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  margin-top: 60px;
+}
+.security-points {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.security-point {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.security-point-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-sm);
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.security-point-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--blue);
+}
+.security-point h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.security-point p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 40px;
+}
+.trust-badge {
+  padding: 10px 20px;
+  border-radius: 50px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.security-visual {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.shield-large {
+  width: 80px;
+  height: 80px;
+  stroke: var(--accent);
+  animation: float 4s ease-in-out infinite;
+}
+.security-visual h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.security-visual p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  max-width: 300px;
+}
+
+/* ========== PRICING ========== */
+.pricing { background: var(--bg-secondary); }
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+  align-items: start;
+}
+.pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 40px 32px;
+  transition: all var(--transition);
+  position: relative;
+}
+.pricing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card);
+}
+.pricing-card.featured {
+  border-color: var(--accent);
+  box-shadow: 0 0 40px var(--accent-glow);
+  transform: scale(1.03);
+}
+.pricing-card.featured:hover {
+  transform: scale(1.03) translateY(-4px);
+}
+.pricing-popular {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: 50px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pricing-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.pricing-price {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin-bottom: 4px;
+}
+.pricing-price span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.pricing-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+.pricing-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+.pricing-features li {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pricing-features li::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 50%;
+  background: rgba(16,185,129,0.1);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2310B981' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.pricing-card .btn { width: 100%; }
+.pricing-card.enterprise {
+  border-color: var(--blue);
+  background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(16,185,129,0.03));
+}
+.pricing-card.enterprise:hover {
+  box-shadow: 0 0 40px rgba(59,130,246,0.15);
+}
+.pricing-deploy-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+}
+.badge-cloud { background: rgba(16,185,129,0.12); color: var(--accent); }
+.badge-self-hosted { background: rgba(59,130,246,0.12); color: var(--blue); }
+
+/* ========== FINAL CTA ========== */
+.final-cta {
+  background: linear-gradient(135deg, rgba(16,185,129,0.05), rgba(59,130,246,0.05));
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: center;
+}
+.final-cta .section-heading { max-width: 600px; margin-left: auto; margin-right: auto; }
+.final-cta .section-sub { margin: 0 auto 40px; }
+
+/* ========== FOOTER ========== */
+.footer {
+  padding: 60px 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.footer-logo {
+  font-size: 1.15rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.footer-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  transition: color var(--transition);
+}
+.footer-links a:hover { color: var(--text-secondary); }
+.footer-copy {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ========== MOBILE NAV ========== */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 72px;
+  left: 0;
+  right: 0;
+  background: rgba(11,15,26,0.97);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 24px;
+  z-index: 999;
+}
+.mobile-menu.open { display: block; }
+.mobile-menu ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.mobile-menu a {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+.mobile-menu .btn { margin-top: 12px; width: 100%; }
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 1024px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+  .hero-content { text-align: center; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-actions { justify-content: center; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .security-content { grid-template-columns: 1fr; }
+  .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); max-width: 720px; margin-left: auto; margin-right: auto; }
+  .pricing-card.featured { transform: none; }
+  .pricing-card.featured:hover { transform: translateY(-4px); }
+}
+@media (max-width: 768px) {
+  .section { padding: 80px 0; }
+  .navbar-links { display: none; }
+  .mobile-toggle { display: flex; }
+  .problem-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr; gap: 48px; }
+  .steps-grid::before { display: none; }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 480px; }
+  .footer-inner { flex-direction: column; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .hero-heading { font-size: 2.25rem; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .hero-actions .btn { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="#" class="navbar-logo">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      OpenLLM
+    </a>
+    <ul class="navbar-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How it Works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#security">Security</a></li>
+    </ul>
+    <div class="navbar-cta">
+      <a href="#pricing" class="btn btn-primary btn-nav">Try it now</a>
+    </div>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <ul>
+    <li><a href="#features" onclick="closeMobile()">Features</a></li>
+    <li><a href="#how-it-works" onclick="closeMobile()">How it Works</a></li>
+    <li><a href="#pricing" onclick="closeMobile()">Pricing</a></li>
+    <li><a href="#security" onclick="closeMobile()">Security</a></li>
+    <li><a href="#pricing" class="btn btn-primary" onclick="closeMobile()">Try it now</a></li>
+  </ul>
+</div>
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-content fade-in-up">
+        <div class="hero-badge">Privacy-First AI Platform</div>
+        <h1 class="hero-heading">Use AI Without<br>Exposing <span class="highlight">Your Data</span></h1>
+        <p class="hero-sub">The secure layer between your sensitive data and AI. Automatic 2-wave anonymization ensures AI never sees your real information.</p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn btn-primary btn-large">Try it instantly</a>
+          <a href="#how-it-works" class="hero-link">See how it works &rarr;</a>
+        </div>
+      </div>
+      <div class="fade-in-up delay-2">
+        <div class="demo-card" id="demoCard">
+          <div class="demo-header">
+            <div class="demo-dots"><span></span><span></span><span></span></div>
+            <span class="demo-title">Anonymization Pipeline</span>
+          </div>
+          <div class="demo-steps">
+            <div class="demo-step-indicator active" data-step="0"></div>
+            <div class="demo-step-indicator" data-step="1"></div>
+            <div class="demo-step-indicator" data-step="2"></div>
+            <div class="demo-step-indicator" data-step="3"></div>
+          </div>
+          <div class="demo-body" id="demoBody">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PROBLEM ========== -->
+<section class="section problem" id="features">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">The Challenge</p>
+      <h2 class="section-heading">The Problem With AI Today</h2>
+      <p class="section-sub mx-auto">Every time you use AI with real data, you risk exposing sensitive information to third-party models.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card fade-in-up delay-1">
+        <div class="problem-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <h3>Data Leaks</h3>
+        <p>Sensitive information sent to AI models can be stored, logged, or used for training, creating uncontrolled data exposure.</p>
+      </div>
+      <div class="problem-card fade-in-up delay-2">
+        <div class="problem-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h3>Compliance Violations</h3>
+        <p>Sharing personal or regulated data with AI platforms can violate GDPR, HIPAA, and other data protection regulations.</p>
+      </div>
+      <div class="problem-card fade-in-up delay-3">
+        <div class="problem-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+        <h3>Loss of Trust</h3>
+        <p>Customers and partners lose confidence when they learn their data is being processed by external AI without safeguards.</p>
+      </div>
+    </div>
+    <div class="transition-text fade-in-up">
+      <p>There's a better way</p>
+      <h3>OpenLLM anonymizes your data before AI ever sees it.</h3>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SEE WHAT AI SEES ========== -->
+<section class="section" id="see-what-ai-sees">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">Transparency</p>
+      <h2 class="section-heading">See What AI Actually Sees</h2>
+      <p class="section-sub mx-auto">Your sensitive data never leaves your environment. AI only receives anonymized tokens.</p>
+    </div>
+    <div class="comparison-grid">
+      <div class="comparison-card yours fade-in-up delay-1">
+        <div class="comparison-header">
+          <span class="dot dot-red"></span>
+          Your Data
+        </div>
+        <div class="comparison-body">
+          <p>Dear <span class="hl-blue">Sarah Johnson</span>,</p>
+          <br>
+          <p>Following our meeting at <span class="hl-orange">Nexus Technologies</span>, I wanted to confirm that <span class="hl-blue">Michael Chen</span> will lead the integration of <span class="hl-orange">Project Aurora</span> with your platform.</p>
+          <br>
+          <p>Please reach out to him at <span class="hl-blue">m.chen@nexustech.io</span> or contact our office at <span class="hl-orange">415-555-0192</span>.</p>
+          <br>
+          <p>Best regards,<br><span class="hl-blue">David Park</span><br><span class="hl-orange">Nexus Technologies</span></p>
+        </div>
+      </div>
+      <div class="comparison-card ai fade-in-up delay-2">
+        <div class="comparison-header">
+          <span class="dot dot-green"></span>
+          What AI Sees
+        </div>
+        <div class="comparison-body">
+          <p>Dear <span class="hl-token-blue">[Person_1]</span>,</p>
+          <br>
+          <p>Following our meeting at <span class="hl-token-orange">[Company_A]</span>, I wanted to confirm that <span class="hl-token-blue">[Person_2]</span> will lead the integration of <span class="hl-token-orange">[Project_1]</span> with your platform.</p>
+          <br>
+          <p>Please reach out to him at <span class="hl-token-blue">[Email_1]</span> or contact our office at <span class="hl-token-orange">[Phone_1]</span>.</p>
+          <br>
+          <p>Best regards,<br><span class="hl-token-blue">[Person_3]</span><br><span class="hl-token-orange">[Company_A]</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOW IT WORKS ========== -->
+<section class="section" id="how-it-works" style="background: var(--bg-secondary);">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">Simple Process</p>
+      <h2 class="section-heading">How It Works</h2>
+      <p class="section-sub mx-auto">Three simple steps to use AI safely with your most sensitive data.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card fade-in-up delay-1">
+        <div class="step-number">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <h3>Upload</h3>
+        <p>Upload your documents, paste text, or connect your data source to OpenLLM.</p>
+      </div>
+      <div class="step-card fade-in-up delay-2">
+        <div class="step-number">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Anonymize</h3>
+        <p>Our 2-wave engine automatically detects and replaces all sensitive data.</p>
+        <div class="wave-details">
+          <div class="wave-item">
+            <strong class="wave-blue">Wave 1 — Personal Data</strong>
+            Names, emails, phones, IDs<br>
+            <code>John Smith → [Person_1]</code>
+          </div>
+          <div class="wave-item">
+            <strong class="wave-orange">Wave 2 — Business Context</strong>
+            Companies, products, projects<br>
+            <code>Acme Corp → [Company_A]</code>
+          </div>
+        </div>
+      </div>
+      <div class="step-card fade-in-up delay-3">
+        <div class="step-number">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Use AI Safely</h3>
+        <p>Get AI-powered insights on your data with zero risk of data exposure. Full utility, full privacy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== BENEFITS ========== -->
+<section class="section benefits" id="benefits">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">Why OpenLLM</p>
+      <h2 class="section-heading">Built for Privacy-Conscious Teams</h2>
+      <p class="section-sub mx-auto">Everything you need to harness AI power without compromising data security.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card fade-in-up delay-1">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Protect Sensitive Data</h3>
+        <p>Automatic anonymization before any AI processing. Personal and business data stays private.</p>
+      </div>
+      <div class="benefit-card fade-in-up delay-2">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <h3>Stay Compliant</h3>
+        <p>GDPR-ready by design. Built for regulated industries including healthcare, finance, and legal.</p>
+      </div>
+      <div class="benefit-card fade-in-up delay-3">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </div>
+        <h3>Use AI Confidently</h3>
+        <p>Process contracts, reports, and confidential documents through AI without hesitation.</p>
+      </div>
+      <div class="benefit-card fade-in-up delay-4">
+        <div class="benefit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <h3>Zero Data Exposure</h3>
+        <p>AI never touches your real information. End-to-end anonymization pipeline keeps data locked down.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SECURITY ========== -->
+<section class="section" id="security">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">Security</p>
+      <h2 class="section-heading">Built for Security-First Organizations</h2>
+      <p class="section-sub mx-auto">Enterprise-grade privacy architecture designed for the most sensitive environments.</p>
+    </div>
+    <div class="security-content">
+      <div class="fade-in-up delay-1">
+        <div class="security-points">
+          <div class="security-point">
+            <div class="security-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </div>
+            <div>
+              <h4>AI never sees raw data</h4>
+              <p>All sensitive information is replaced with tokens before reaching any AI model.</p>
+            </div>
+          </div>
+          <div class="security-point">
+            <div class="security-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <h4>Privacy-first architecture</h4>
+              <p>Built from the ground up with data privacy as the core design principle.</p>
+            </div>
+          </div>
+          <div class="security-point">
+            <div class="security-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div>
+              <h4>Designed for sensitive environments</h4>
+              <p>Trusted by teams handling healthcare, financial, and legal data.</p>
+            </div>
+          </div>
+          <div class="security-point">
+            <div class="security-point-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </div>
+            <div>
+              <h4>End-to-end anonymization pipeline</h4>
+              <p>Two-wave processing ensures both personal and business context data are fully protected.</p>
+            </div>
+          </div>
+        </div>
+        <div class="trust-badges">
+          <div class="trust-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            SOC 2 Type II
+          </div>
+          <div class="trust-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            GDPR Compliant
+          </div>
+          <div class="trust-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            HIPAA Ready
+          </div>
+          <div class="trust-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            ISO 27001
+          </div>
+        </div>
+      </div>
+      <div class="security-visual fade-in-up delay-2">
+        <svg class="shield-large" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 12 15 16 10" stroke-width="2"/></svg>
+        <h3>Your Data, Your Control</h3>
+        <p>Data is anonymized locally before any external processing. We never store your original data.</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <span style="padding:6px 14px;border-radius:50px;background:var(--blue-glow);color:var(--blue);font-size:0.8rem;font-weight:600;">Wave 1: Personal</span>
+          <span style="padding:6px 14px;border-radius:50px;background:var(--orange-glow);color:var(--orange);font-size:0.8rem;font-weight:600;">Wave 2: Business</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PRICING ========== -->
+<section class="section pricing" id="pricing">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">Pricing</p>
+      <h2 class="section-heading">Simple, Transparent Pricing</h2>
+      <p class="section-sub mx-auto">Start free in the cloud, or deploy on your own infrastructure for maximum control.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card fade-in-up delay-1">
+        <span class="pricing-deploy-badge badge-cloud">SaaS Cloud</span>
+        <h3>Free</h3>
+        <div class="pricing-price">$0<span>/mo</span></div>
+        <p class="pricing-desc">For individuals exploring AI safely.</p>
+        <ul class="pricing-features">
+          <li>100 requests per month</li>
+          <li>Wave 1 anonymization</li>
+          <li>1 user</li>
+          <li>Community support</li>
+          <li>Hosted on our cloud</li>
+        </ul>
+        <a href="#" class="btn btn-secondary">Start Free</a>
+      </div>
+      <div class="pricing-card featured fade-in-up delay-2">
+        <div class="pricing-popular">Most Popular</div>
+        <span class="pricing-deploy-badge badge-cloud">SaaS Cloud</span>
+        <h3>Pro</h3>
+        <div class="pricing-price">$29<span>/mo</span></div>
+        <p class="pricing-desc">For teams that need full protection.</p>
+        <ul class="pricing-features">
+          <li>Unlimited requests</li>
+          <li>Wave 1 + Wave 2 anonymization</li>
+          <li>5 users</li>
+          <li>Priority support</li>
+          <li>Advanced analytics</li>
+          <li>Hosted on our cloud</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Get Pro</a>
+      </div>
+      <div class="pricing-card fade-in-up delay-3">
+        <span class="pricing-deploy-badge badge-cloud">SaaS Cloud</span>
+        <h3>Business</h3>
+        <div class="pricing-price">$99<span>/mo</span></div>
+        <p class="pricing-desc">For organizations with advanced needs.</p>
+        <ul class="pricing-features">
+          <li>Everything in Pro</li>
+          <li>Custom anonymization rules</li>
+          <li>Unlimited users</li>
+          <li>SSO &amp; SAML</li>
+          <li>Dedicated support</li>
+          <li>Hosted on our cloud</li>
+        </ul>
+        <a href="#" class="btn btn-secondary">Contact Sales</a>
+      </div>
+      <div class="pricing-card enterprise fade-in-up delay-4">
+        <span class="pricing-deploy-badge badge-self-hosted">Self-Hosted</span>
+        <h3>Enterprise</h3>
+        <div class="pricing-price">Custom</div>
+        <p class="pricing-desc">Deploy on your own infrastructure. Maximum data sovereignty.</p>
+        <ul class="pricing-features">
+          <li>Everything in Business</li>
+          <li>On-premise or private cloud</li>
+          <li>Data never leaves your infra</li>
+          <li>Docker / Kubernetes deployment</li>
+          <li>Custom AI provider integration</li>
+          <li>Dedicated onboarding &amp; SLA</li>
+          <li>Air-gapped environment support</li>
+        </ul>
+        <a href="#" class="btn btn-secondary">Talk to Us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FINAL CTA ========== -->
+<section class="section final-cta">
+  <div class="container">
+    <div class="fade-in-up">
+      <p class="section-label">Get Started</p>
+      <h2 class="section-heading">Start Using AI Safely Today</h2>
+      <p class="section-sub">No credit card required. Free plan available. Set up in under 2 minutes.</p>
+      <a href="#pricing" class="btn btn-primary btn-large">Try it now</a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="logo-icon" style="width:28px;height:28px;background:linear-gradient(135deg,var(--accent),var(--blue));border-radius:6px;display:flex;align-items:center;justify-content:center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        OpenLLM
+      </div>
+      <ul class="footer-links">
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Documentation</a></li>
+      </ul>
+      <p class="footer-copy">&copy; 2026 OpenLLM. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ========== NAVBAR SCROLL ==========
+const navbar = document.getElementById('navbar');
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
+// ========== MOBILE MENU ==========
+const mobileToggle = document.getElementById('mobileToggle');
+const mobileMenu = document.getElementById('mobileMenu');
+mobileToggle.addEventListener('click', () => {
+  mobileMenu.classList.toggle('open');
+});
+function closeMobile() {
+  mobileMenu.classList.remove('open');
+}
+
+// ========== INTERSECTION OBSERVER (fade-in) ==========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+
+// ========== HERO DEMO ANIMATION ==========
+const demoSteps = [
+  {
+    label: '<span style="color:var(--text-muted);">Original Data</span>',
+    html: '<span class="hl-blue">John Smith</span> from <span class="hl-orange">Acme Corp</span> sent <span class="hl-blue">john@acme.com</span> about <span class="hl-orange">Project Phoenix</span>',
+    badge: null
+  },
+  {
+    label: '<span style="color:var(--blue);">Wave 1</span> <span style="color:var(--text-muted);">&mdash; Personal Data</span>',
+    html: '<span class="hl-token">User_847</span> from <span class="hl-orange">Acme Corp</span> sent <span class="hl-token">[email_1]</span> about <span class="hl-orange">Project Phoenix</span>',
+    badge: null
+  },
+  {
+    label: '<span style="color:var(--orange);">Wave 2</span> <span style="color:var(--text-muted);">&mdash; Business Context</span>',
+    html: '<span class="hl-token">User_847</span> from <span class="hl-token">[Company_A]</span> sent <span class="hl-token">[email_1]</span> about <span class="hl-token">[Project_1]</span>',
+    badge: null
+  },
+  {
+    label: '<span style="color:var(--accent);">Complete</span>',
+    html: '<span class="hl-token">User_847</span> from <span class="hl-token">[Company_A]</span> sent <span class="hl-token">[email_1]</span> about <span class="hl-token">[Project_1]</span>',
+    badge: 'safe'
+  }
+];
+
+let currentStep = 0;
+const demoBody = document.getElementById('demoBody');
+const indicators = document.querySelectorAll('.demo-step-indicator');
+
+function renderStep(step) {
+  const s = demoSteps[step];
+  demoBody.style.opacity = '0';
+  setTimeout(() => {
+    demoBody.innerHTML = `
+      <div class="demo-step-label">${s.label}</div>
+      <div class="demo-text">${s.html}</div>
+      <div class="demo-badge ${s.badge === 'safe' ? 'safe' : ''}" id="demoBadge">${s.badge === 'safe' ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> AI-Safe' : ''}</div>
+    `;
+    demoBody.style.opacity = '1';
+    indicators.forEach((ind, i) => ind.classList.toggle('active', i <= step));
+    if (s.badge === 'safe') {
+      setTimeout(() => {
+        const badge = document.getElementById('demoBadge');
+        if (badge) badge.classList.add('show');
+      }, 200);
+    }
+  }, 300);
+}
+
+renderStep(0);
+
+// Auto-cycle
+let demoInterval = setInterval(() => {
+  currentStep = (currentStep + 1) % demoSteps.length;
+  renderStep(currentStep);
+}, 3000);
+
+// Click on indicators
+indicators.forEach(ind => {
+  ind.addEventListener('click', () => {
+    clearInterval(demoInterval);
+    currentStep = parseInt(ind.dataset.step);
+    renderStep(currentStep);
+    demoInterval = setInterval(() => {
+      currentStep = (currentStep + 1) % demoSteps.length;
+      renderStep(currentStep);
+    }, 3000);
+  });
+});
+
+// ========== SMOOTH SCROLL FOR ANCHOR LINKS ==========
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>

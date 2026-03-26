@@ -1,0 +1,27 @@
+=============================================
+  SecureLLM Privacy Gateway - Quick Start
+  Linux Edition
+=============================================
+
+STEP 1: Ensure Docker and Docker Compose are installed.
+
+STEP 2: Run the installer:
+
+    chmod +x install.sh
+    sudo ./install.sh
+
+STEP 3: Save the Admin API key displayed at the end.
+
+STEP 4: Test:
+
+    curl -sk https://localhost/health
+
+STEP 5: Test anonymization:
+
+    curl -sk https://localhost/v1/anonymize \
+      -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{"text": "John Smith from Acme Corp"}'
+
+Done. Full documentation is in README.md.
+=============================================

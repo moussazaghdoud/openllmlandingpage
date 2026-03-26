@@ -1,0 +1,18 @@
+{
+  "ORGANIZATION": [
+    "Acme Corp",
+    "Initech",
+    "Globex Corporation",
+    "Umbrella Inc"
+  ],
+  "PRODUCT": [
+    "Widget Pro",
+    "DataSync Platform",
+    "CloudVault"
+  ],
+  "PROJECT": [
+    "Project Phoenix",
+    "Project Aurora",
+    "Operation Sunrise"
+  ]
+}
