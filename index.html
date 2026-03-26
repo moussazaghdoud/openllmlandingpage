@@ -487,82 +487,6 @@ img { max-width: 100%; display: block; }
   background-clip: text;
 }
 
-/* ========== SEE WHAT AI SEES ========== */
-.comparison-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  margin-top: 60px;
-}
-.comparison-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
-}
-.comparison-header {
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border-subtle);
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.comparison-header .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-.comparison-header .dot-red { background: var(--danger); }
-.comparison-header .dot-green { background: var(--accent); }
-.comparison-body {
-  padding: 28px 24px;
-  font-size: 0.92rem;
-  line-height: 2;
-  color: var(--text-secondary);
-}
-.comparison-card.yours { border-color: rgba(239,68,68,0.15); }
-.comparison-card.ai { border-color: rgba(16,185,129,0.15); }
-.comparison-body .hl-blue {
-  color: var(--blue);
-  background: var(--blue-glow);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.comparison-body .hl-orange {
-  color: var(--orange);
-  background: var(--orange-glow);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.comparison-body .hl-token-blue {
-  color: var(--blue);
-  background: var(--blue-glow);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-style: italic;
-}
-.comparison-body .hl-token-orange {
-  color: var(--orange);
-  background: var(--orange-glow);
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-style: italic;
-}
-.arrow-between {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: var(--text-muted);
-}
-
 /* ========== HOW IT WORKS ========== */
 .steps-grid {
   display: grid;
@@ -1618,49 +1542,6 @@ img { max-width: 100%; display: block; }
       <button class="flow-label" data-fs="1">The Risk</button>
       <button class="flow-label" data-fs="2">Protected</button>
       <button class="flow-label" data-fs="3">Result</button>
-    </div>
-  </div>
-</section>
-
-<!-- ========== SEE WHAT AI SEES ========== -->
-<section class="section" id="see-what-ai-sees">
-  <div class="container">
-    <div class="text-center fade-in-up">
-      <p class="section-label">Transparency</p>
-      <h2 class="section-heading">See What AI Actually Sees</h2>
-      <p class="section-sub mx-auto">Your sensitive data never leaves your environment. AI only receives anonymized tokens.</p>
-    </div>
-    <div class="comparison-grid">
-      <div class="comparison-card yours fade-in-up delay-1">
-        <div class="comparison-header">
-          <span class="dot dot-red"></span>
-          Your Contract
-        </div>
-        <div class="comparison-body">
-          <p><strong>PARTNERSHIP AGREEMENT</strong></p>
-          <br>
-          <p>This agreement is entered into by <span class="hl-blue">Sarah Johnson</span>, CEO of <span class="hl-orange">Nexus Technologies Inc.</span> (hereinafter "Party A"), and <span class="hl-blue">Michael Chen</span>, CTO of <span class="hl-orange">Vertex AI Solutions</span> (hereinafter "Party B").</p>
-          <br>
-          <p>Party A agrees to license <span class="hl-orange">Project Aurora</span> to Party B for a period of 24 months at a rate of <span class="hl-orange">$450,000/year</span>. All communications shall be directed to <span class="hl-blue">s.johnson@nexustech.io</span> or <span class="hl-blue">415-555-0192</span>.</p>
-          <br>
-          <p>Signed on behalf of <span class="hl-orange">Nexus Technologies Inc.</span><br><span class="hl-blue">Sarah Johnson</span> &mdash; SSN: <span class="hl-blue">287-43-8891</span></p>
-        </div>
-      </div>
-      <div class="comparison-card ai fade-in-up delay-2">
-        <div class="comparison-header">
-          <span class="dot dot-green"></span>
-          What AI Sees
-        </div>
-        <div class="comparison-body">
-          <p><strong>PARTNERSHIP AGREEMENT</strong></p>
-          <br>
-          <p>This agreement is entered into by <span class="hl-token-blue">[Person_1]</span>, CEO of <span class="hl-token-orange">[Company_A]</span> (hereinafter "Party A"), and <span class="hl-token-blue">[Person_2]</span>, CTO of <span class="hl-token-orange">[Company_B]</span> (hereinafter "Party B").</p>
-          <br>
-          <p>Party A agrees to license <span class="hl-token-orange">[Project_1]</span> to Party B for a period of 24 months at a rate of <span class="hl-token-orange">[Amount_1]</span>. All communications shall be directed to <span class="hl-token-blue">[Email_1]</span> or <span class="hl-token-blue">[Phone_1]</span>.</p>
-          <br>
-          <p>Signed on behalf of <span class="hl-token-orange">[Company_A]</span><br><span class="hl-token-blue">[Person_1]</span> &mdash; SSN: <span class="hl-token-blue">[SSN_1]</span></p>
-        </div>
-      </div>
     </div>
   </div>
 </section>
