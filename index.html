@@ -652,6 +652,236 @@ img { max-width: 100%; display: block; }
   border-radius: 3px;
 }
 
+/* ========== ANIMATED FLOW ========== */
+.flow-section { background: var(--bg-primary); }
+.flow-animation {
+  margin-top: 60px;
+  position: relative;
+}
+.flow-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 20px 0 40px;
+  overflow-x: auto;
+}
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  opacity: 0.35;
+  transform: scale(0.92);
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.flow-node.active {
+  opacity: 1;
+  transform: scale(1);
+}
+.flow-node.active .flow-node-icon {
+  box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(16,185,129,0.06);
+}
+.flow-node-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--border-medium);
+  background: var(--bg-card);
+  transition: all 0.5s ease;
+}
+.flow-icon-user svg { stroke: var(--blue); }
+.flow-icon-shield svg { stroke: var(--accent); }
+.flow-icon-ai svg { stroke: var(--orange); }
+.flow-icon-check svg { stroke: var(--accent); }
+.flow-node.active .flow-icon-user { border-color: var(--blue); background: rgba(59,130,246,0.1); }
+.flow-node.active .flow-icon-shield { border-color: var(--accent); background: rgba(16,185,129,0.1); }
+.flow-node.active .flow-icon-ai { border-color: var(--orange); background: rgba(245,158,11,0.1); }
+.flow-node.active .flow-icon-check { border-color: var(--accent); background: rgba(16,185,129,0.15); }
+.flow-node-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  transition: color 0.4s ease;
+}
+.flow-node.active .flow-node-label { color: var(--text-primary); }
+
+.flow-connector {
+  width: 80px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  opacity: 0.3;
+  transition: opacity 0.5s ease;
+}
+.flow-connector.active { opacity: 1; }
+.flow-connector.active .flow-arrow { color: var(--accent); }
+.flow-connector-return.active .flow-arrow { color: var(--blue); }
+.flow-arrow { width: 80px; height: 20px; }
+
+.flow-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent), 0 0 24px rgba(16,185,129,0.3);
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  opacity: 0;
+  z-index: 2;
+}
+.flow-connector-return .flow-particle {
+  background: var(--blue);
+  box-shadow: 0 0 12px var(--blue), 0 0 24px rgba(59,130,246,0.3);
+}
+@keyframes particleMove {
+  0% { left: 0; opacity: 1; }
+  100% { left: calc(100% - 8px); opacity: 1; }
+}
+.flow-particle.moving {
+  animation: particleMove 0.6s ease-in-out forwards;
+}
+
+/* Flow preview card */
+.flow-preview {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: 32px;
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.5s ease;
+}
+.flow-preview.step-0 { border-color: rgba(59,130,246,0.2); }
+.flow-preview.step-1 { border-color: rgba(16,185,129,0.25); }
+.flow-preview.step-2 { border-color: rgba(245,158,11,0.25); }
+.flow-preview.step-3 { border-color: rgba(59,130,246,0.25); }
+.flow-preview.step-4 { border-color: rgba(16,185,129,0.3); }
+.flow-preview-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.flow-preview-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  transition: background 0.4s ease;
+}
+.flow-preview.step-1 .flow-preview-dot { background: var(--accent); }
+.flow-preview.step-2 .flow-preview-dot { background: var(--orange); }
+.flow-preview.step-3 .flow-preview-dot { background: var(--blue); }
+.flow-preview.step-4 .flow-preview-dot { background: var(--accent); }
+.flow-preview-body {
+  padding: 24px 20px;
+  font-size: 0.92rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+  min-height: 90px;
+  transition: opacity 0.3s ease;
+}
+.flow-preview-body .hl-blue {
+  color: var(--blue);
+  background: var(--blue-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.flow-preview-body .hl-orange {
+  color: var(--orange);
+  background: var(--orange-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.flow-preview-body .hl-token {
+  color: var(--accent);
+  background: var(--accent-glow);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+.flow-preview-body .hl-result {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Progress bar */
+.flow-progress {
+  width: 100%;
+  height: 3px;
+  background: var(--bg-card-hover);
+  border-radius: 3px;
+  margin-top: 32px;
+  overflow: hidden;
+}
+.flow-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--blue), var(--accent));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+.flow-step-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.flow-step-btn {
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.flow-step-btn:hover { color: var(--text-secondary); }
+.flow-step-btn.active {
+  color: var(--accent);
+  background: rgba(16,185,129,0.1);
+}
+
+/* Mobile flow */
+@media (max-width: 768px) {
+  .flow-track {
+    gap: 0;
+    padding: 20px 10px 30px;
+    justify-content: flex-start;
+  }
+  .flow-node-icon { width: 48px; height: 48px; }
+  .flow-node-icon svg { width: 18px; height: 18px; }
+  .flow-connector { width: 40px; }
+  .flow-arrow { width: 40px; }
+  .flow-node-label { font-size: 0.6rem; }
+  .flow-step-labels { gap: 2px; }
+  .flow-step-btn { font-size: 0.6rem; padding: 4px 6px; }
+}
+
 /* ========== BENEFITS ========== */
 .benefits { background: var(--bg-secondary); }
 .benefits-grid {
@@ -1109,6 +1339,100 @@ img { max-width: 100%; display: block; }
   </div>
 </section>
 
+<!-- ========== ANIMATED FLOW ========== -->
+<section class="section flow-section" id="flow">
+  <div class="container">
+    <div class="text-center fade-in-up">
+      <p class="section-label">The Journey</p>
+      <h2 class="section-heading">What Happens When You Use OpenLLM</h2>
+      <p class="section-sub mx-auto">Watch your data flow securely through our pipeline — anonymized before AI, restored after.</p>
+    </div>
+
+    <div class="flow-animation fade-in-up delay-1" id="flowAnimation">
+      <!-- Flow nodes -->
+      <div class="flow-track">
+        <div class="flow-node" id="flowNode0">
+          <div class="flow-node-icon flow-icon-user">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span class="flow-node-label">You</span>
+        </div>
+
+        <div class="flow-connector" id="flowConn0">
+          <div class="flow-particle" id="particle0"></div>
+          <svg class="flow-arrow" viewBox="0 0 80 20"><path d="M0 10 L70 10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 4"/><polygon points="70,5 80,10 70,15" fill="currentColor"/></svg>
+        </div>
+
+        <div class="flow-node" id="flowNode1">
+          <div class="flow-node-icon flow-icon-shield">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span class="flow-node-label">OpenLLM Engine</span>
+        </div>
+
+        <div class="flow-connector" id="flowConn1">
+          <div class="flow-particle" id="particle1"></div>
+          <svg class="flow-arrow" viewBox="0 0 80 20"><path d="M0 10 L70 10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 4"/><polygon points="70,5 80,10 70,15" fill="currentColor"/></svg>
+        </div>
+
+        <div class="flow-node" id="flowNode2">
+          <div class="flow-node-icon flow-icon-ai">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <span class="flow-node-label">AI Model</span>
+        </div>
+
+        <div class="flow-connector flow-connector-return" id="flowConn2">
+          <div class="flow-particle" id="particle2"></div>
+          <svg class="flow-arrow" viewBox="0 0 80 20"><path d="M0 10 L70 10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 4"/><polygon points="70,5 80,10 70,15" fill="currentColor"/></svg>
+        </div>
+
+        <div class="flow-node" id="flowNode3">
+          <div class="flow-node-icon flow-icon-shield">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <span class="flow-node-label">De-anonymize</span>
+        </div>
+
+        <div class="flow-connector flow-connector-return" id="flowConn3">
+          <div class="flow-particle" id="particle3"></div>
+          <svg class="flow-arrow" viewBox="0 0 80 20"><path d="M0 10 L70 10" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="4 4"/><polygon points="70,5 80,10 70,15" fill="currentColor"/></svg>
+        </div>
+
+        <div class="flow-node" id="flowNode4">
+          <div class="flow-node-icon flow-icon-check">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <span class="flow-node-label">Your Result</span>
+        </div>
+      </div>
+
+      <!-- Data preview card -->
+      <div class="flow-preview" id="flowPreview">
+        <div class="flow-preview-header">
+          <span class="flow-preview-dot"></span>
+          <span class="flow-preview-title" id="flowPreviewTitle">Your Prompt</span>
+        </div>
+        <div class="flow-preview-body" id="flowPreviewBody">
+          Summarize the contract between <span class="hl-blue">Sarah Johnson</span> and <span class="hl-orange">Nexus Technologies</span> about <span class="hl-orange">Project Aurora</span>. Contact: <span class="hl-blue">s.johnson@email.com</span>
+        </div>
+      </div>
+
+      <!-- Progress bar -->
+      <div class="flow-progress">
+        <div class="flow-progress-bar" id="flowProgressBar"></div>
+      </div>
+      <div class="flow-step-labels">
+        <button class="flow-step-btn active" data-fstep="0">Send</button>
+        <button class="flow-step-btn" data-fstep="1">Anonymize</button>
+        <button class="flow-step-btn" data-fstep="2">AI Processes</button>
+        <button class="flow-step-btn" data-fstep="3">Restore</button>
+        <button class="flow-step-btn" data-fstep="4">Receive</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ========== SEE WHAT AI SEES ========== -->
 <section class="section" id="see-what-ai-sees">
   <div class="container">
@@ -1521,6 +1845,123 @@ indicators.forEach(ind => {
       currentStep = (currentStep + 1) % demoSteps.length;
       renderStep(currentStep);
     }, 3000);
+  });
+});
+
+// ========== FLOW ANIMATION ==========
+const flowSteps = [
+  {
+    title: 'Your Prompt',
+    body: 'Summarize the contract between <span class="hl-blue">Sarah Johnson</span> and <span class="hl-orange">Nexus Technologies</span> about <span class="hl-orange">Project Aurora</span>. Contact: <span class="hl-blue">s.johnson@email.com</span>',
+    activeNodes: [0],
+    activeConns: [],
+    particle: null
+  },
+  {
+    title: 'Anonymized by OpenLLM',
+    body: 'Summarize the contract between <span class="hl-token">[Person_1]</span> and <span class="hl-token">[Company_A]</span> about <span class="hl-token">[Project_1]</span>. Contact: <span class="hl-token">[Email_1]</span>',
+    activeNodes: [0, 1],
+    activeConns: [0],
+    particle: 0
+  },
+  {
+    title: 'AI Processes Safely',
+    body: 'The contract between <span class="hl-token">[Person_1]</span> and <span class="hl-token">[Company_A]</span> for <span class="hl-token">[Project_1]</span> outlines a 24-month partnership covering data integration, joint development, and revenue sharing at 60/40 split...',
+    activeNodes: [0, 1, 2],
+    activeConns: [0, 1],
+    particle: 1
+  },
+  {
+    title: 'Response De-anonymized',
+    body: 'The contract between <span class="hl-blue">Sarah Johnson</span> and <span class="hl-orange">Nexus Technologies</span> for <span class="hl-orange">Project Aurora</span> outlines a 24-month partnership covering data integration, joint development, and revenue sharing at 60/40 split...',
+    activeNodes: [0, 1, 2, 3],
+    activeConns: [0, 1, 2],
+    particle: 2
+  },
+  {
+    title: 'Your Private Result',
+    body: '<span class="hl-result">&#10003; Delivered securely.</span> The contract between <span class="hl-blue">Sarah Johnson</span> and <span class="hl-orange">Nexus Technologies</span> for <span class="hl-orange">Project Aurora</span> outlines a 24-month partnership covering data integration, joint development, and revenue sharing at 60/40 split...',
+    activeNodes: [0, 1, 2, 3, 4],
+    activeConns: [0, 1, 2, 3],
+    particle: 3
+  }
+];
+
+let flowStep = 0;
+let flowInterval;
+const flowPreview = document.getElementById('flowPreview');
+const flowPreviewTitle = document.getElementById('flowPreviewTitle');
+const flowPreviewBody = document.getElementById('flowPreviewBody');
+const flowProgressBar = document.getElementById('flowProgressBar');
+const flowNodes = [0,1,2,3,4].map(i => document.getElementById('flowNode' + i));
+const flowConns = [0,1,2,3].map(i => document.getElementById('flowConn' + i));
+const flowParticles = [0,1,2,3].map(i => document.getElementById('particle' + i));
+const flowBtns = document.querySelectorAll('.flow-step-btn');
+
+function renderFlow(step) {
+  const s = flowSteps[step];
+
+  // Update nodes
+  flowNodes.forEach((n, i) => n.classList.toggle('active', s.activeNodes.includes(i)));
+  flowConns.forEach((c, i) => c.classList.toggle('active', s.activeConns.includes(i)));
+
+  // Fire particle
+  flowParticles.forEach(p => { p.classList.remove('moving'); p.style.opacity = '0'; });
+  if (s.particle !== null) {
+    const p = flowParticles[s.particle];
+    // Reset animation
+    void p.offsetWidth;
+    p.classList.add('moving');
+  }
+
+  // Update preview
+  flowPreviewBody.style.opacity = '0';
+  setTimeout(() => {
+    flowPreviewTitle.textContent = s.title;
+    flowPreviewBody.innerHTML = s.body;
+    flowPreviewBody.style.opacity = '1';
+  }, 250);
+
+  // Update preview card class
+  flowPreview.className = 'flow-preview step-' + step;
+
+  // Update progress
+  flowProgressBar.style.width = (step / (flowSteps.length - 1) * 100) + '%';
+
+  // Update buttons
+  flowBtns.forEach((b, i) => b.classList.toggle('active', i === step));
+}
+
+function startFlowCycle() {
+  flowInterval = setInterval(() => {
+    flowStep = (flowStep + 1) % flowSteps.length;
+    renderFlow(flowStep);
+  }, 3500);
+}
+
+// Initialize when in view
+const flowObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      renderFlow(0);
+      startFlowCycle();
+      flowObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+
+const flowAnim = document.getElementById('flowAnimation');
+if (flowAnim) {
+  flowObserver.observe(flowAnim);
+}
+
+// Click step buttons
+flowBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    clearInterval(flowInterval);
+    flowStep = parseInt(btn.dataset.fstep);
+    renderFlow(flowStep);
+    startFlowCycle();
   });
 });
 
